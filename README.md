@@ -315,8 +315,8 @@ sudo hostintctl -d <interface> -T source -U
 ## Usage Example
 
 In this example, we wish to monitor packet latency when sending data
-from the host S using interface `eth1`, to the host R using interface
-`eno1`, using INT encapsulation INT_05_OVER_TCP_UDP.
+from the host S using interface `gre1`, to the host R using interface
+`gre1`, using INT encapsulation INT_05_OVER_TCP_UDP.
 
 It is best to start the `hostintd` service on all hosts first, before
 enabling any hosts as senders of packets with INT headers.  If you
@@ -329,13 +329,13 @@ application will see INT headers added to the data.
  1. Install Host-INT software, following the steps above.
  2. Edit `/etc/hostintd.cfg` with below content on host S:
     ```
-    DEV=eth1
-    NODEID=2
+    DEV=gre1
+    NODEID=1
     OPT=-v 0x01 -m 0x01 -B 5000,10000,20000,40000,60000,120000 -E int_05_over_tcp_udp --filename /usr/lib/hostint/intmd_xdp_ksink.o -o /var/log/hostintd_report.log
     ```
     Use the same `/etc/hostintd.cfg` contents on host R as on host S,
-    except change the value of `DEV` to `en0`, and the value of
-    `NODEID` to 3.
+    except change the value of `DEV` to `gre1`, and the value of
+    `NODEID` to 2.
  3. launch the `hostintd` service
     ```
     sudo systemctl start hostintd
@@ -343,7 +343,7 @@ application will see INT headers added to the data.
 * On host S only:
  1. load source EBPF program
     ```
-    sudo hostintctl -d eth1 -T source --filename /usr/lib/hostint/intmd_tc_ksource.o --filter-filename filter.txt
+    sudo hostintctl -d gre1 -T source --filename /usr/lib/hostint/intmd_tc_ksource.o --filter-filename ../../int_filter.txt
     ```
 * send a packet from the host S to the host R
 * check packet latency
